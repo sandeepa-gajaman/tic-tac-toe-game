@@ -2,27 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
-  class Square extends React.Component {
-
-    render() {
-
-      console.log('Square’s render method');
-
-      /*
-      1.The onClick prop on the built-in DOM <button> component tells React to set up a click event listener.
-      2.When the button is clicked, React will call the onClick event handler that is defined in Square’s render() method.
-      3.This event handler calls this.props.onClick(). The Square’s onClick prop was specified by the Board.
-      **/
-
-      return (
-        <button
-          className="square"
-          onClick={() => this.props.onClick()}
-        >
-          {this.props.value}
-        </button>
-      );
-    }
+  function Square(props) {
+    return (
+      <button className="square" onClick={props.onClick}>
+        {props.value}
+      </button>
+    );
   }
   
   class Board extends React.Component {
@@ -38,19 +23,32 @@ import './index.css';
       super(props);
       this.state = {
         squares: Array(9).fill(null),
+        xIsNext: true,
+        /*
+        Each time a player moves, xIsNext (a boolean) will be flipped to 
+        determine which player goes next and the game’s state will be saved.
+        **/
       };
     }
 
     handleClick(i) {
-      console.log('The Square calls the Board’s handleClick when clicked.');
       const squares = this.state.squares.slice();
-      squares[i] = 'X';
-      this.setState({squares: squares});
+      //flip the value of xIsNext
+      squares[i] = this.state.xIsNext ? 'X' : 'O';
+
+      console.log('If it is ' + this.state.xIsNext + ' squares[i] set to ' + squares[i]);
+
+      this.setState({
+        squares: squares,
+        xIsNext: !this.state.xIsNext,
+      });
+      
+      console.log('Flip the value of xIsNext to ' + !this.state.xIsNext);
+      console.log(squares);
+      
     }
     
     renderSquare(i) {
-
-      console.log('renderSquare fucntion in Board');
 
       /*
       Passing down two props from Board to Square: "value" and "onClick". 
@@ -66,7 +64,8 @@ import './index.css';
     }
   
     render() {
-      const status = 'Next player: X';
+      //Change the “status” text in Board’s render to displays which player has the next turn
+      const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
   
       return (
         <div>
